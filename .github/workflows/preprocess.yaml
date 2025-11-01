@@ -4,36 +4,35 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch:  # Bisa dijalankan manual dari tab Actions
+  workflow_dispatch:
+
+permissions:
+  contents: write  #  izinkan workflow untuk push commit ke repo
 
 jobs:
   preprocess:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Clone repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2️⃣ Setup Python environment
       - name: Setup Python 3.12
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
 
-      # 3️⃣ Install dependencies
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install pandas numpy scikit-learn
 
-      # 4️⃣ Jalankan otomatisasi preprocessing
       - name: Run preprocessing script
         run: |
+          mkdir -p preprocessing/dataset_ready
           cd preprocessing
-          python automate_hamzah.py
+          python automate_Hamzah.py
 
-      # 5️⃣ Commit dan push hasil preprocessing ke repo
       - name: Commit and push preprocessed dataset
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -41,10 +40,9 @@ jobs:
           git config --local user.email "github-actions@github.com"
           git config --local user.name "github-actions[bot]"
           git add preprocessing/dataset_ready/*
-          git commit -m "✅ Auto-preprocess: update dataset_ready (Lung Cancer)" || echo "No changes to commit"
-          git push origin main
+          git commit -m " Auto-preprocess: update dataset_ready (Lung Cancer)" || echo "No changes to commit"
+          git push https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git main
 
-      # 6️⃣ Upload hasil preprocessing sebagai artifact (opsional)
       - name: Upload preprocessed dataset as artifact
         uses: actions/upload-artifact@v4
         with:
