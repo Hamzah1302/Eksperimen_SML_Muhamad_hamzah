@@ -31,7 +31,7 @@ jobs:
         run: |
           mkdir -p preprocessing/dataset_ready
           cd preprocessing
-          python automate_Hamzah.py
+          python automate_hamzah.py
 
       - name: Commit and push preprocessed dataset
         env:
