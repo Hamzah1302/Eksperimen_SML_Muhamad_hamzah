@@ -1,0 +1,49 @@
+name: 🚀 Preprocessing Lung Cancer Dataset (Hamzah)
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:  # bisa dijalankan manual lewat tab Actions
+
+jobs:
+  preprocess:
+    runs-on: ubuntu-latest
+
+    steps:
+    # 1️⃣ Clone repository
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # 2️⃣ Setup Python environment
+    - name: Setup Python 3.12
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+
+    # 3️⃣ Install dependencies
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas numpy scikit-learn
+
+    # 4️⃣ Jalankan otomatisasi preprocessing
+    - name: Run preprocessing script
+      run: |
+        cd preprocessing
+        python automate_Hamzah.py
+
+    # 5️⃣ Commit dan push hasil preprocessing ke repo
+    - name: Commit and push preprocessed dataset
+      run: |
+        git config --local user.email "github-actions@github.com"
+        git config --local user.name "github-actions[bot]"
+        git add preprocessing/dataset_ready/*
+        git commit -m "✅ Auto-preprocess: update dataset_ready (Lung Cancer)"
+        git push
+
+    # 6️⃣ Upload hasil preprocessing sebagai artifact juga (opsional tapi bagus untuk Advanced)
+    - name: Upload preprocessed dataset as artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: lung_cancer_preprocessed
+        path: preprocessing/dataset_ready/
